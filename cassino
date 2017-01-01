@@ -1,0 +1,266 @@
+package cs1.app;
+import cs1.android.*;
+
+public class Card
+{
+    private int number;
+    private int points;
+    
+    public Card( int n )
+    {
+        number = n;
+        points = getPoints();
+    }
+    
+    public int getNumber()
+    {
+         return number;
+    }
+    
+    public int getPoints()
+    {
+         if( number > 100 )
+         {
+             points = 10;
+         }
+         else
+         {
+            points = number/10;
+         }
+         return points;
+    }
+    
+    public int getWidth()
+    {
+         int width = 71;
+         return width;
+    }
+    
+    public int getHeight()
+    {
+         int height = 96;
+         return height;
+    }
+    
+    public void draw( int x, int y )
+    {
+         canvas.drawImage(x,y,"card"+number+".png");
+    }
+    
+    public static void main(String[] args)
+    {
+         Card card1 = new Card(84);
+         System. out. println("card rank:" + card1.getNumber());
+         System. out. println("card value:" + card1. getPoints());
+         System. out. println("card width:" + card1. getWidth());
+         System. out. println("card height:" + card1. getHeight());
+    } 
+}
+
+public class Player
+{
+     private String name;
+     private int points;
+     private Boolean active;
+     private Card lasCard;
+     
+     public Player( String n ) // n is the name of player
+     {
+          active = true;
+          points = 0;
+          lastCard = new Card(0);
+          name = n;
+     }
+     
+     public String getName()
+     {
+          return name;
+     }
+     
+     public int getPoints()
+     {
+          return points;
+     }
+     
+     public boolean isActive()
+     {
+          return active;
+     }
+     
+     public void stopPlaying()
+     {
+          active = false;
+     }
+     
+     public void collectCard( Card card )
+     {
+          lastCard = card;
+          points  = points + card.getPoints();
+          
+          if( points = 21 )
+          {
+               active = false;
+          }
+     }
+     public void draw( int x, int y )
+     {
+          lastCard.draw( x, y );
+          canvas.drawText( x, y-lastCard.getHeight(), name, "orange");
+          canvas.drawSquare( x, y, 20, "black" );
+          canvas.drawSquare( x, y, 17, "white" );
+          if (active == true )
+          {
+               canvas.drawText( x, y, points, "blue" );
+          }
+          else
+          {
+               canvas.drawText( x, y, points, "red" );
+          }
+     }
+}
+
+import java.util.ArrayList;
+
+public class Deck
+{
+      private ArrayList< Card > cards; // represents the collections of cards
+      
+      Public Deck()
+      {
+            cards = new ArrayList< Card >();
+            for ( int number = 1; number <= 13; number = number + 1 )
+            {
+                  int n1 = number * 10 + 1;
+                  Card card1 = new Card( n1 );
+                  cards.add( card1 );
+            
+                  int n2 = number * 10 + 2;
+                  Card card2 = new Card( n2 );
+                  cards.add( card2 );
+            
+                  int n3 = number * 10 + 3;
+                  Card card3 = new Card( n3 );
+                  cards.add( card3 );
+            
+                  int n4 = number * 10 + 4;
+                  Card card4 = new Card( n4 );
+                  cards.add( card4 );
+             }
+        }
+        
+        public Card deal()
+        {
+              int index = cards.size() - 1;
+              Card card = cards.remove( index );
+              return card;
+        }
+        
+        public void shuffle()
+        {
+              for ( int count = 0; count < card.size()/2; count = count + 1 )
+              {
+                    int index1 = canvas.getRandomInt( 0, cards.size() - 1 );
+                    int index2 = canvas.getRandomInt( 0, cards.size() - 1 );
+                    
+                    Card card1 = cards.get( index1 );
+                    Card card2 = cards.get( index2 );
+                    
+                    cards.set( index1, card2 );
+                    cards.set( index2, card1 );
+              }
+        }
+        
+        public void draw( int y )
+        {
+               int x = 71/2;
+               for ( int i = 0; i < cards.size(); i = i + 1 )
+               {
+                      Card card = cards.get(i);
+                      card.draw( x, y );
+                      x = x + 10;
+               }
+        }
+}
+
+public class Casino
+{
+     private ArrayList< Player > players;
+     
+     public Casino()
+     {
+           players = new ArrayList<Player>();
+     }
+     
+     public void add( Player player )
+     {
+           player.add( player );
+     }
+     
+     public boolean hasActive()
+     {
+           for ( int i = 0; i < player.size(); i = i + 1 )
+           {
+                 Player player = players.get( i );
+                 if ( player.isActive() == true )
+                 {
+                      return true;
+                 }
+           }
+           
+           return false;
+     }
+     
+     public void drawPlayers()
+     {
+          int populaton = players.size();
+          int y = 96/2;
+          int width = canvas.getWidth();
+          
+          for ( int i = 0; i < players.size(); i = i + 1 )
+          {
+                int x = ( i + 1 ) * width/ ( population + 1 );
+                Player player = player.get( i );
+                player. draw( x, y );
+          }
+     }
+     
+     public void playBlackjack()
+     {
+          Deck deck = new Deck();
+          deck.shuffle();
+          int index = 0; // index of current player
+          int population = players.size(); 
+          
+          while ( hasActive() == true )
+          {
+               canvas.clear();
+               drawPlayers();
+               deck.draw( canvas. getHeight()/2 );
+               
+               Player curPlayer = players.get( index );
+               
+               if ( curPlayer.isActive() == true )
+               {
+                    Touch touch = canvas.waitForTouch();
+                    int taps = touch.getTaps();
+                    
+                    if ( taps == 1 )
+                    {
+                          Card card = deck.deal();
+                          curPlayer.collectCard( Card );
+                    }
+                    else( taps == 2 )
+                    {
+                          curPlayer.stopPlaying();
+                    }
+               }
+               index = ( index + 1 ) % population;
+          }
+          
+          canvas.clear();
+          canvas.drawText( canvas.getWidth()/2, 4*canvas.getHeight()/5, "The End", 24, "black" );
+          drawPlayers();
+          deck.draw( canvas.getHeight()/2 );
+     }
+}
+
